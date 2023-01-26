@@ -59,8 +59,8 @@ func UpdateNote(id uint, title, description string) error {
 		return err
 	}
 
-	note.Title = title
-	note.Description = description
+	note.Title = html.EscapeString(strings.TrimSpace(title))
+	note.Description = html.EscapeString(strings.TrimSpace(description))
 
 	if err = database.Save(&note).Error; err != nil {
 		return errors.New("could not update note")
