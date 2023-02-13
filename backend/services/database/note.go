@@ -15,10 +15,10 @@ type Note struct {
 	UserID      uint   `gorm:"size:255;not null;"`
 }
 
-func GetNote(noteID uint) (Note, error) {
+func GetNote(ID string) (Note, error) {
 	var note Note
 
-	if err := database.First(&note, noteID).Error; err != nil {
+	if err := database.Where("id = ?", ID).First(&note).Error; err != nil {
 		return note, errors.New("note not found")
 	}
 
@@ -49,28 +49,19 @@ func AddNote(title, description string, userID uint) error {
 	return nil
 }
 
-func UpdateNote(id uint, title, description string) error {
-	var note Note
-	var err error
-
-	note, err = GetNote(id)
-
-	if err != nil {
-		return err
-	}
-
+func UpdateNote(note Note, title, description string) error {
 	note.Title = html.EscapeString(strings.TrimSpace(title))
 	note.Description = html.EscapeString(strings.TrimSpace(description))
 
-	if err = database.Save(&note).Error; err != nil {
+	if err := database.Save(&note).Error; err != nil {
 		return errors.New("could not update note")
 	}
 
 	return nil
 }
 
-func DeleteNote(id uint) error {
-	if err := database.Delete(&Note{}, id).Error; err != nil {
+func DeleteNote(note Note) error {
+	if err := database.Delete(&note).Error; err != nil {
 		return errors.New("could not delete note")
 	}
 

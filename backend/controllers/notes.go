@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 
@@ -60,15 +59,7 @@ func Create(c *gin.Context) {
 }
 
 func Show(c *gin.Context) {
-	noteID, err := strconv.ParseUint(c.Param("id"), 10, 64)
-
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "data": err.Error()})
-		return
-	}
-
-	var note database.Note
-	note, err = database.GetNote(uint(noteID))
+	note, err := database.GetNote(c.Param("id"))
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "data": err.Error()})
@@ -92,6 +83,7 @@ func Show(c *gin.Context) {
 }
 
 func Update(c *gin.Context) {
+	var note database.Note
 	var input NoteInput
 	var err error
 
@@ -100,16 +92,7 @@ func Update(c *gin.Context) {
 		return
 	}
 
-	var noteID uint64
-	noteID, err = strconv.ParseUint(c.Param("id"), 10, 64)
-
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "data": err.Error()})
-		return
-	}
-
-	var note database.Note
-	note, err = database.GetNote(uint(noteID))
+	note, err = database.GetNote(c.Param("id"))
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "data": err.Error()})
@@ -129,7 +112,7 @@ func Update(c *gin.Context) {
 		return
 	}
 
-	err = database.UpdateNote(uint(noteID), input.Title, input.Description)
+	err = database.UpdateNote(note, input.Title, input.Description)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "data": err.Error()})
@@ -139,15 +122,7 @@ func Update(c *gin.Context) {
 }
 
 func Destroy(c *gin.Context) {
-	noteID, err := strconv.ParseUint(c.Param("id"), 10, 64)
-
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "data": err.Error()})
-		return
-	}
-
-	var note database.Note
-	note, err = database.GetNote(uint(noteID))
+	note, err := database.GetNote(c.Param("id"))
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "data": err.Error()})
@@ -167,7 +142,7 @@ func Destroy(c *gin.Context) {
 		return
 	}
 
-	if err = database.DeleteNote(uint(noteID)); err != nil {
+	if err = database.DeleteNote(note); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "data": err.Error()})
 		return
 	}
