@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 )
 
 func Generate(userID uint, roleID uint) (string, error) {
@@ -18,13 +18,11 @@ func Generate(userID uint, roleID uint) (string, error) {
 		return "", err
 	}
 
-	claims := jwt.MapClaims{}
-	claims["authorized"] = true
-	claims["user_id"] = userID
-	claims["user_role_id"] = roleID
-	claims["exp"] = time.Now().Add(time.Hour * time.Duration(lifespan)).Unix()
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": userID,
+		"role_id": roleID,
+		"exp":     time.Now().Add(time.Hour * time.Duration(lifespan)).Unix(),
+	})
 
 	return token.SignedString([]byte(os.Getenv("TOKEN_SECRET")))
 }
@@ -89,7 +87,7 @@ func ExtractRoleID(c *gin.Context) (uint, error) {
 	}
 
 	var id uint64
-	id, err = strconv.ParseUint(fmt.Sprint(claims["user_role_id"]), 10, 64)
+	id, err = strconv.ParseUint(fmt.Sprint(claims["role_id"]), 10, 64)
 
 	if err != nil {
 		return 0, err
