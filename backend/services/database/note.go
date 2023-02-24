@@ -5,18 +5,11 @@ import (
 	"html"
 	"strings"
 
-	"gorm.io/gorm"
+	"notes/backend/models"
 )
 
-type Note struct {
-	gorm.Model
-	Title       string `gorm:"size:255;not null"`
-	Description string `gorm:"size:255"`
-	UserID      uint   `gorm:"not null"`
-}
-
-func GetNote(ID string) (Note, error) {
-	var note Note
+func GetNote(ID string) (models.Note, error) {
+	var note models.Note
 
 	if err := database.Where("id = ?", ID).First(&note).Error; err != nil {
 		return note, errors.New("note not found")
@@ -25,8 +18,8 @@ func GetNote(ID string) (Note, error) {
 	return note, nil
 }
 
-func GetNotes(userID uint) ([]Note, error) {
-	var notes []Note
+func GetNotes(userID uint) ([]models.Note, error) {
+	var notes []models.Note
 
 	if err := database.Where("user_id = ?", userID).Find(&notes).Error; err != nil {
 		return notes, errors.New("user not found")
@@ -36,7 +29,7 @@ func GetNotes(userID uint) ([]Note, error) {
 }
 
 func AddNote(title, description string, userID uint) error {
-	note := Note{
+	note := models.Note{
 		Title:       html.EscapeString(strings.TrimSpace(title)),
 		Description: html.EscapeString(strings.TrimSpace(description)),
 		UserID:      userID,
@@ -49,7 +42,7 @@ func AddNote(title, description string, userID uint) error {
 	return nil
 }
 
-func UpdateNote(note Note, title, description string) error {
+func UpdateNote(note models.Note, title, description string) error {
 	note.Title = html.EscapeString(strings.TrimSpace(title))
 	note.Description = html.EscapeString(strings.TrimSpace(description))
 
@@ -60,7 +53,7 @@ func UpdateNote(note Note, title, description string) error {
 	return nil
 }
 
-func DeleteNote(note Note) error {
+func DeleteNote(note models.Note) error {
 	if err := database.Delete(&note).Error; err != nil {
 		return errors.New("could not delete note")
 	}

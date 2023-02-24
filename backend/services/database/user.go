@@ -6,21 +6,13 @@ import (
 	"strings"
 
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 
+	"notes/backend/models"
 	"notes/backend/utilities/token"
 )
 
-type User struct {
-	gorm.Model
-	Email    string `gorm:"size:255;not null;unique"`
-	Username string `gorm:"size:255;not null;unique"`
-	Password string `gorm:"size:255;not null"`
-	RoleID   uint   `gorm:"not null"`
-}
-
-func GetUserByID(uid uint) (User, error) {
-	var user User
+func GetUserByID(uid uint) (models.User, error) {
+	var user models.User
 
 	if err := database.Omit("password").First(&user, uid).Error; err != nil {
 		return user, errors.New("user not found")
@@ -43,7 +35,7 @@ func AddUser(email, username, password string) error {
 		return err
 	}
 
-	user := User{
+	user := models.User{
 		Email:    html.EscapeString(strings.TrimSpace(email)),
 		Username: html.EscapeString(strings.TrimSpace(username)),
 		Password: string(hashedPassword),
@@ -54,7 +46,7 @@ func AddUser(email, username, password string) error {
 }
 
 func LoginUser(username, password string) (string, error) {
-	var user User
+	var user models.User
 	var err error
 
 	if err = database.Where("username = ?", username).Take(&user).Error; err != nil {

@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"notes/backend/models"
 	"notes/backend/services/database"
 	"notes/backend/utilities/token"
 )
@@ -29,7 +30,7 @@ func GetCurrentUser(c *gin.Context) {
 		return
 	}
 
-	var user database.User
+	var user models.User
 	user, err = database.GetUserByID(userID)
 
 	if err != nil {
@@ -67,7 +68,7 @@ func GetUserNotesByID(c *gin.Context) {
 		return
 	}
 
-	var notes []database.Note
+	var notes []models.Note
 	notes, err = database.GetNotes(uint(userID))
 
 	if err != nil {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"notes/backend/models"
 	"notes/backend/services/database"
 	"notes/backend/utilities/token"
 )
@@ -22,7 +23,7 @@ func Index(c *gin.Context) {
 		return
 	}
 
-	var notes []database.Note
+	var notes []models.Note
 	notes, err = database.GetNotes(userID)
 
 	if err != nil {
@@ -83,7 +84,7 @@ func Show(c *gin.Context) {
 }
 
 func Update(c *gin.Context) {
-	var note database.Note
+	var note models.Note
 	var input NoteInput
 	var err error
 

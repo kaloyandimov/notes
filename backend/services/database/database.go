@@ -7,6 +7,8 @@ import (
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	"notes/backend/models"
 )
 
 var database *gorm.DB
@@ -25,7 +27,7 @@ func Connect() {
 		log.Fatalln("gorm: could not connect to database", err)
 	}
 
-	if err = database.AutoMigrate(&User{}, &Note{}, &Role{}); err != nil {
+	if err = database.AutoMigrate(&models.User{}, &models.Note{}, &models.Role{}); err != nil {
 		log.Fatalln("gorm: could not run auto migration")
 	}
 
